@@ -1,0 +1,19 @@
+{
+  "name": "etm-starting",
+  "version": "1.0.0",
+  "description": "entanmo starting",
+  "homepage": ".",
+  "main": "app.js",
+  "dependencies": {},
+  "devDependencies": {
+    "electron": "^5.0.4",
+    "electron-builder": "^20.43.0"
+  },
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "buildw": "npx electron-builder -w"
+  },
+  "author": "Sy",
+  "license": "ISC"
+}
