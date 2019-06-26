@@ -12,8 +12,17 @@
   "scripts": {
     "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "buildw": "npx electron-builder -w"
+    "build-w": "npx electron-builder -w"
   },
   "author": "Sy",
-  "license": "ISC"
+  "license": "ISC",
+  "build": {
+    "productName": "EnTanMo",
+    "appId": "com.entanmo.etm",
+    "copyright": "EnTanMo",
+    "electronVersion": "5.0.2",
+    "electronDownload": {
+      "version": "5.0.2"
+    }
+  }
 }
