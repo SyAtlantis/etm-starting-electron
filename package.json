@@ -4,7 +4,9 @@
   "description": "entanmo starting",
   "homepage": ".",
   "main": "app.js",
-  "dependencies": {},
+  "dependencies": {
+    "etm-starting-server": "git+https://github.com/SyAtlantis/etm-starting-server.git"
+  },
   "devDependencies": {
     "electron": "^5.0.4",
     "electron-builder": "^20.43.0"
