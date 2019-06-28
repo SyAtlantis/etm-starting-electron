@@ -23,7 +23,7 @@ let createWindow = () => {
     });
 
     // 开启子进程启动服务
-    fork(__dirname + "/server.js", []);
+    fork(__dirname + "/server/main.js", []);
 }
 
 app.on('ready', createWindow);
@@ -39,4 +39,3 @@ app.on('activate', () => {
         createWindow();
     }
 });
-
