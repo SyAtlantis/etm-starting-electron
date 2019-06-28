@@ -6,17 +6,17 @@ const fs = require("fs");
 const shelljs = require("shelljs");
 
 /// constants
-const rootDir = path.resolve(path.join(__dirname, "../../../resources"));
+const rootDir = path.resolve(path.join(__dirname, "../../.."));
 // const rootDir = path.resolve(path.dirname(process.execPath));
-const projDir = path.resolve(path.join(rootDir, "etm"));
+const projDir = path.resolve(path.join(rootDir, "resources/etm"));
 
 const appNodePath = async () => {
     if (process.platform === "win32") {
-        return path.resolve(rootDir, "./node/win32/runner.exe");
+        return path.resolve(rootDir, "./resources/node/win32/runner.exe");
     } else if (process.platform === "linux") {
-        return path.resolve(rootDir, "./node/linux/runner");
+        return path.resolve(rootDir, "./resources/node/linux/runner");
     } else if (process.platform === "darwin") {
-        return path.resolve(rootDir, "./node/macos/runner");
+        return path.resolve(rootDir, "./resources/node/macos/runner");
     } else {
         throw new Error(`Unsupported os[${process.platform}]`);
     }
@@ -27,9 +27,9 @@ const appPM2Path = async () => {
         // windows下使用自定义路径，后面代码有说明
         return path.resolve(rootDir, "pm2.cmd");
     } else if (process.platform === "linux") {
-        return path.resolve(rootDir, "../node_modules/.bin/pm2");
+        return path.resolve(rootDir, "./node_modules/.bin/pm2");
     } else if (process.platform === "darwin") {
-        return path.resolve(rootDir, "../node_modules/.bin/pm2");
+        return path.resolve(rootDir, "./node_modules/.bin/pm2");
     } else {
         throw new Error(`Unsupported os[${process.platform}]`);
     }
@@ -81,7 +81,7 @@ const lnPM2 = async () => {
         if (process.platform === "win32") {
             // windows通过自定义全新cmd文件的方式来进行安装
             if (!fs.existsSync(srcPM2Path)) {
-                const pm2_command_path = path.join(rootDir, "../node_modules", "pm2", "bin", "pm2");
+                const pm2_command_path = path.join(rootDir, "node_modules", "pm2", "bin", "pm2");
                 const commands = [
                     "@ECHO OFF",
                     "@SETLOCAL",
