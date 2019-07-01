@@ -1,4 +1,3 @@
-
 const { app, BrowserWindow } = require('electron');
 const { fork } = require("child_process");
 const path = require('path');

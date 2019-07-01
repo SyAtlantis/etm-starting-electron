@@ -2,7 +2,10 @@
 
 const os = require('os');
 const axios = require('axios');
-const shell = require('shelljs');
+const path = require("path");
+const common = require('../lib/common');
+const etmjslib = require('etm-js-lib');
+
 
 let getNetInfo = async ctx => {
     try {
@@ -74,17 +77,72 @@ let getProcInfo = async ctx => {
 };
 
 let getSyncInfo = async ctx => {
-    ctx.body = {
-        success: false,
-        message: "todo getSyncInfo"
-    };
+    try {
+        let rootPath = common.getRootPath();
+        const config = require(path.join(rootPath + "/etm/config/config.json"));
+        let port = config.port;
+        let url = `http://20.188.242.113:4098/api/loader/status/sync`;
+        // let url = `http://localhost:${port}/api/loader/status/sync`;
+
+        await axios.get(url)
+            .then(res => {
+                // console.log(res);
+                if (res.data && res.data.success) {
+
+                    ctx.body = {
+                        success: true,
+                        results: res.data
+                    };
+                }
+                else {
+                    throw new Error(res.data.error);
+                }
+            }).catch(err => {
+                throw err;
+            });
+    } catch (err) {
+        ctx.body = {
+            success: false,
+            message: `${err}`
+        };
+    }
 };
 
 let getBlockInfo = async ctx => {
-    ctx.body = {
-        success: false,
-        message: "todo getBlockInfo"
-    };
+    try {
+        // let rootPath = common.getRootPath();
+        // const config = require(path.join(rootPath + "/etm/config/config.json"));
+        // let port = config.port;
+        // let secret = config.forging.secret[0];
+        // let hash = etmjslib.crypto.createHash("sha256").update(secret).digest();
+        // let publicKey = etmjslib.utils.ed.MakeKeypair(hash).publicKey;
+        // let url = `http://localhost:${port}/api/delegates/get`;
+
+        let publicKey = "330fce6558acfae682fd720295fbfb07434a2511048d3fa6497887aa3a9521e6"
+        let url = `http://20.188.242.113:4098/api/delegates/get?publicKey=${publicKey}`;
+
+        await axios.get(url)
+            .then(res => {
+                // console.log(res);
+                if (res.data && res.data.success) {
+
+                    ctx.body = {
+                        success: true,
+                        results: res.data.delegate
+                    };
+                }
+                else {
+                    throw new Error(res.data.error);
+                }
+            }).catch(err => {
+                throw err;
+            });
+    } catch (err) {
+        ctx.body = {
+            success: false,
+            message: `${err}`
+        };
+    }
 };
 
 module.exports = (router) => {

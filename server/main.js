@@ -7,6 +7,7 @@ const program = require("commander");
 const Koa = require("koa");
 const KoaRouter = require("koa-router");
 const cors = require("koa2-cors");
+const bodyParser = require('koa-bodyparser');
 
 const Logger = require("./src/utils/logger");
 
@@ -44,6 +45,12 @@ let _setup = async opt => {
 
     // koa cors Access-Control-Allow-Origin
     app.use(cors());
+    app.use(bodyParser());
+
+    // app.use(async (ctx, next) => {
+    //     ctx.body = ctx.request.body;
+    //     await next();
+    // });
 
     // router
     const apiDir = path.resolve(__dirname, "src", "api");

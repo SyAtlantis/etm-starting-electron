@@ -1,35 +1,36 @@
 "use strict";
 
+const fs = require("fs");
+const path = require("path");
+const common = require('../lib/common');
+
 let setVulue = async ctx => {
-    ctx.body = {
-        success: true,
-        data: "test success"
-    };
+    try {
+        let { params } = ctx.request.body;
+        let rootPath = common.getRootPath();
+        let configPath = path.join(rootPath, "/etm/config/config.json");
+
+        let config = fs.readFileSync(configPath);
+        let configJson = JSON.parse(config);
+        configJson.port = params.port;
+        configJson.peerPort = (parseInt(params.port) + 1).toString();
+        configJson.publicIp = params.publicIp;
+        configJson.forging.secret = [params.secret];
+
+        fs.writeFileSync(configPath, JSON.stringify(configJson, null, 2));
+
+        ctx.body = {
+            success: true,
+            results: "setting data ok"
+        };
+    } catch (err) {
+        ctx.body = {
+            success: false,
+            message: `${err}`
+        };
+    }
 }
 
-// let setPublicTp = async ctx => {
-//     ctx.body = {
-//         success: true,
-//         data: "test success"
-//     };
-// }
-
-// let setPort = async ctx => {
-//     ctx.body = {
-//         success: true,
-//         data: "test success"
-//     };
-// }
-
-// let setSecret = async ctx => {
-//     ctx.body = {
-//         success: true,
-//         data: "test success"
-//     };
-// }
-
 module.exports = (router) => {
-    router.put("/setting/setVulue", setVulue);
-    // router.put("/setting/setPort", setPort);
-    // router.put("/setting/setSecret", setSecret);
+    router.post("/setting/setVulue", setVulue);
 };

@@ -2,3 +2,5 @@ node_modules/
 publish/
 dist/
 resources/
+.vscode/
+package-lock.json

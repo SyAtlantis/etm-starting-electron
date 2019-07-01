@@ -4,7 +4,7 @@ const Conf = require("conf");
 
 const confInst = new Conf({ projectName: "etm-starting-server" });
 
-console.log("conf:", confInst.path);
+// console.log("conf:", confInst.path);
 
 const Keys = {
     installed: "installed",
