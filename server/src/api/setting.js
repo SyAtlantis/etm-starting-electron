@@ -1,23 +1,19 @@
 "use strict";
 
-const fs = require("fs");
-const path = require("path");
-const common = require('../lib/common');
+const EtmHelper = require('../lib/etmHelper');
 
 let setVulue = async ctx => {
     try {
         let { params } = ctx.request.body;
-        let rootPath = common.getRootPath();
-        let configPath = path.join(rootPath, "/etm/config/config.json");
 
-        let config = fs.readFileSync(configPath);
-        let configJson = JSON.parse(config);
+        let configJson = EtmHelper.readConfig();
+
         configJson.port = params.port;
         configJson.peerPort = (parseInt(params.port) + 1).toString();
         configJson.publicIp = params.publicIp;
         configJson.forging.secret = [params.secret];
 
-        fs.writeFileSync(configPath, JSON.stringify(configJson, null, 2));
+        EtmHelper.writeConfig(configJson);
 
         ctx.body = {
             success: true,

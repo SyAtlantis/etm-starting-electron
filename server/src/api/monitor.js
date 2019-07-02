@@ -1,9 +1,7 @@
 "use strict";
 
-const os = require('os');
 const axios = require('axios');
-const path = require("path");
-const common = require('../lib/common');
+const EtmHelper = require('../lib/etmHelper');
 const etmjslib = require('etm-js-lib');
 
 
@@ -78,12 +76,11 @@ let getProcInfo = async ctx => {
 
 let getSyncInfo = async ctx => {
     try {
-        let rootPath = common.getRootPath();
-        const config = require(path.join(rootPath + "/etm/config/config.json"));
+        let config = EtmHelper.readConfig();
         let port = config.port;
-        let url = `http://20.188.242.113:4098/api/loader/status/sync`;
+        let url = `http://20.188.242.113:${port}/api/loader/status/sync`;
         // let url = `http://localhost:${port}/api/loader/status/sync`;
-
+        console.log("getSyncInfo url=>", url)
         await axios.get(url)
             .then(res => {
                 // console.log(res);
@@ -110,16 +107,16 @@ let getSyncInfo = async ctx => {
 
 let getBlockInfo = async ctx => {
     try {
-        // let rootPath = common.getRootPath();
-        // const config = require(path.join(rootPath + "/etm/config/config.json"));
-        // let port = config.port;
+        let config = EtmHelper.readConfig();
+        let port = config.port;
+
         // let secret = config.forging.secret[0];
         // let hash = etmjslib.crypto.createHash("sha256").update(secret).digest();
         // let publicKey = etmjslib.utils.ed.MakeKeypair(hash).publicKey;
         // let url = `http://localhost:${port}/api/delegates/get`;
 
         let publicKey = "330fce6558acfae682fd720295fbfb07434a2511048d3fa6497887aa3a9521e6"
-        let url = `http://20.188.242.113:4098/api/delegates/get?publicKey=${publicKey}`;
+        let url = `http://20.188.242.113:${port}/api/delegates/get?publicKey=${publicKey}`;
 
         await axios.get(url)
             .then(res => {

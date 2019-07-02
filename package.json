@@ -17,7 +17,6 @@
     "koa-bodyparser": "^4.2.1",
     "koa-router": "^7.4.0",
     "koa2-cors": "^2.0.6",
-    "pm2": "^3.5.1",
     "shelljs": "^0.8.3",
     "strftime": "^0.10.0",
     "winreg": "^1.2.4"
@@ -34,13 +33,14 @@
   "author": "Sy",
   "license": "ISC",
   "build": {
-    "asar": true,
+    "asar": false,
     "productName": "EnTanMo",
     "appId": "com.entanmo.etm",
     "copyright": "EnTanMo",
     "electronVersion": "5.0.2",
     "electronDownload": {
       "version": "5.0.2"
-    }
+    },
+    "icon": "./logo.ico"
   }
 }

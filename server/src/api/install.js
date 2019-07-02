@@ -1,13 +1,12 @@
 "use strict";
 
-const path = require("path");
 const env = require('../lib/env');
-const common = require('../lib/common');
+const EtmHelper = require('../lib/etmHelper');
 
 // entanmo project
 let getEntanmoInfo = async ctx => {
-    let rootPath = common.getRootPath();
-    const packageJson = require(path.join(rootPath + "/etm/package.json"));
+    let packagePath = EtmHelper.getPackagePath();
+    const packageJson = require(packagePath);
     let version = packageJson.version;
 
     if (version) {

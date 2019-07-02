@@ -2,13 +2,17 @@ const { app, BrowserWindow } = require('electron');
 const { fork } = require("child_process");
 const path = require('path');
 
+// const Menu = electron.Menu
+
 let mainWindow;
 
 let createWindow = () => {
+    // 隐藏菜单栏
+
     mainWindow = new BrowserWindow({
-        width: 900,
+        width: 600,
         height: 650,
-        minWidth: 900,
+        minWidth: 576,
         minHeight: 650,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js')
