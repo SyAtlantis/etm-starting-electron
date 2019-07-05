@@ -1,7 +1,8 @@
 "use strict";
 
 const axios = require('axios');
-const EtmHelper = require('../lib/etmHelper');
+const File = require('../libs/file');
+const etm = require('../libs/etm');
 const etmjslib = require('etm-js-lib');
 
 
@@ -35,6 +36,15 @@ let getNetInfo = async ctx => {
 };
 
 let getGpuInfo = async ctx => {
+    try {
+
+    } catch (err) {
+        ctx.body = {
+            success: false,
+            message: `${err}`
+        };
+    }
+
     // let cmd = '';
     // // let args = [];
     // if (process.platform == 'darwin') {
@@ -61,26 +71,35 @@ let getGpuInfo = async ctx => {
     //     shell.exit(1);
     // }
 
-    ctx.body = {
-        success: false,
-        message: "todo getGpuInfo"
-    };
 };
 
 let getProcInfo = async ctx => {
-    ctx.body = {
-        success: false,
-        message: "todo getProcInfo"
-    };
+    try {
+        await etm.getStatus()
+            .then(res => {
+                ctx.body = {
+                    success: true,
+                    results: { status: res }
+                };
+            }).catch(err => {
+                throw err;
+            });
+    } catch (err) {
+        ctx.body = {
+            success: false,
+            message: `${err}`
+        };
+    }
 };
 
 let getSyncInfo = async ctx => {
     try {
-        let config = EtmHelper.readConfig();
+        let config = File.readConfig();
         let port = config.port;
-        let url = `http://20.188.242.113:${port}/api/loader/status/sync`;
-        // let url = `http://localhost:${port}/api/loader/status/sync`;
-        console.log("getSyncInfo url=>", url)
+        // let url = `http://20.188.242.113:${port}/api/loader/status/sync`;
+        let url = `http://localhost:${port}/api/loader/status/sync`;
+
+        // console.log("getSyncInfo url=>", url)
         await axios.get(url)
             .then(res => {
                 // console.log(res);
@@ -107,16 +126,20 @@ let getSyncInfo = async ctx => {
 
 let getBlockInfo = async ctx => {
     try {
-        let config = EtmHelper.readConfig();
+        let config = File.readConfig();
         let port = config.port;
 
-        // let secret = config.forging.secret[0];
-        // let hash = etmjslib.crypto.createHash("sha256").update(secret).digest();
-        // let publicKey = etmjslib.utils.ed.MakeKeypair(hash).publicKey;
-        // let url = `http://localhost:${port}/api/delegates/get`;
+        let secret = config.forging.secret[0];
+        if (!secret) {
+            throw "This miner did not set secret!";
+        }
 
-        let publicKey = "330fce6558acfae682fd720295fbfb07434a2511048d3fa6497887aa3a9521e6"
-        let url = `http://20.188.242.113:${port}/api/delegates/get?publicKey=${publicKey}`;
+        let hash = etmjslib.crypto.createHash("sha256").update(secret).digest();
+        let publicKey = etmjslib.utils.ed.MakeKeypair(hash).publicKey;
+        let url = `http://localhost:${port}/api/delegates/get?publicKey=${publicKey}`;
+
+        // let publicKey = "330fce6558acfae682fd720295fbfb07434a2511048d3fa6497887aa3a9521e6"
+        // let url = `http://20.188.242.113:${port}/api/delegates/get?publicKey=${publicKey}`;
 
         await axios.get(url)
             .then(res => {
@@ -129,7 +152,7 @@ let getBlockInfo = async ctx => {
                     };
                 }
                 else {
-                    throw new Error(res.data.error);
+                    throw res.data.error;
                 }
             }).catch(err => {
                 throw err;

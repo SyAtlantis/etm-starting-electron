@@ -1,45 +1,12 @@
 "use strict";
 
-const env = require('../lib/env');
-const EtmHelper = require('../lib/etmHelper');
+const node = require('../libs/node');
+const pm2 = require('../libs/pm2');
+const etm = require('../libs/etm');
 
-// entanmo project
-let getEntanmoInfo = async ctx => {
-    let packagePath = EtmHelper.getPackagePath();
-    const packageJson = require(packagePath);
-    let version = packageJson.version;
-
-    if (version) {
-        return ctx.body = {
-            success: true,
-            results: version
-        };
-    }
-
-    ctx.body = {
-        success: false,
-        message: "Can not find entanmo project!"
-    };
-};
-
-let installEntanmo = async ctx => {
-    ctx.body = {
-        success: false,
-        message: "TODO installEntanmo"
-    };
-};
-
-let uninstallEntanmo = async ctx => {
-    ctx.body = {
-        success: false,
-        message: "TODO uninstallEntanmo"
-    };
-};
-
-// nodejs
-let getNodejsInfo = async ctx => {
+let getNodeInfo = async ctx => {
     try {
-        await env.doctorNode()
+        await node.getNodeVersion()
             .then(res => {
                 ctx.body = {
                     success: true,
@@ -54,50 +21,11 @@ let getNodejsInfo = async ctx => {
             message: `${err}`
         };
     }
-};
+}
 
-let installNodejs = async ctx => {
-    try {
-        await env.lnNode()
-            .then(res => {
-                ctx.body = {
-                    success: true,
-                    results: res
-                };
-            }).catch(err => {
-                throw err;
-            });
-    } catch (err) {
-        ctx.body = {
-            success: false,
-            message: `${err}`
-        };
-    }
-};
-
-let uninstallNodejs = async ctx => {
-    try {
-        await env.unlnNode()
-            .then(res => {
-                ctx.body = {
-                    success: true,
-                    results: res
-                };
-            }).catch(err => {
-                throw err;
-            });
-    } catch (err) {
-        ctx.body = {
-            success: false,
-            message: `${err}`
-        };
-    }
-};
-
-// pm2
 let getPm2Info = async ctx => {
     try {
-        await env.doctorPM2()
+        await pm2.getPm2Version()
             .then(res => {
                 ctx.body = {
                     success: true,
@@ -112,11 +40,49 @@ let getPm2Info = async ctx => {
             message: `${err}`
         };
     }
-};
+}
+
+let getEtmInfo = async ctx => {
+    try {
+        await etm.getEtmVersion()
+            .then(res => {
+                ctx.body = {
+                    success: true,
+                    results: res
+                };
+            }).catch(err => {
+                throw err;
+            });
+    } catch (err) {
+        ctx.body = {
+            success: false,
+            message: `${err}`
+        };
+    }
+}
+
+let installNode = async ctx => {
+    try {
+        await node.linkNode()
+            .then(res => {
+                ctx.body = {
+                    success: true,
+                    results: res
+                };
+            }).catch(err => {
+                throw err;
+            });
+    } catch (err) {
+        ctx.body = {
+            success: false,
+            message: `${err}`
+        };
+    }
+}
 
 let installPm2 = async ctx => {
     try {
-        await env.lnPM2()
+        await pm2.linkPm2()
             .then(res => {
                 ctx.body = {
                     success: true,
@@ -131,11 +97,49 @@ let installPm2 = async ctx => {
             message: `${err}`
         };
     }
-};
+}
+
+let installEtm = async ctx => {
+    try {
+        await etm.installEtm()
+            .then(res => {
+                ctx.body = {
+                    success: true,
+                    results: res
+                };
+            }).catch(err => {
+                throw err;
+            });
+    } catch (err) {
+        ctx.body = {
+            success: false,
+            message: `${err}`
+        };
+    }
+}
+
+let uninstallNode = async ctx => {
+    try {
+        await node.unlinkNode()
+            .then(res => {
+                ctx.body = {
+                    success: true,
+                    results: res
+                };
+            }).catch(err => {
+                throw err;
+            });
+    } catch (err) {
+        ctx.body = {
+            success: false,
+            message: `${err}`
+        };
+    }
+}
 
 let uninstallPm2 = async ctx => {
     try {
-        await env.unlnPM2()
+        await pm2.unlinkPm2()
             .then(res => {
                 ctx.body = {
                     success: true,
@@ -150,18 +154,37 @@ let uninstallPm2 = async ctx => {
             message: `${err}`
         };
     }
-};
+}
+
+let uninstallEtm = async ctx => {
+    try {
+        await etm.unistallEtm()
+            .then(res => {
+                ctx.body = {
+                    success: true,
+                    results: res
+                };
+            }).catch(err => {
+                throw err;
+            });
+    } catch (err) {
+        ctx.body = {
+            success: false,
+            message: `${err}`
+        };
+    }
+}
 
 module.exports = (router) => {
-    router.get("/install/getEntanmoInfo", getEntanmoInfo);
-    router.get("/install/getNodejsInfo", getNodejsInfo);
-    router.get("/install/getPm2Info", getPm2Info);
+    router.get("/depend/getNodeInfo", getNodeInfo);
+    router.get("/depend/getPm2Info", getPm2Info);
+    router.get("/depend/getEtmInfo", getEtmInfo);
 
-    router.put("/install/installEntanmo", installEntanmo);
-    router.put("/install/installNodejs", installNodejs);
-    router.put("/install/installPm2", installPm2);
+    router.put("/depend/installNode", installNode);
+    router.put("/depend/installPm2", installPm2);
+    router.put("/depend/installEtm", installEtm);
 
-    router.put("/install/uninstallEntanmo", uninstallEntanmo);
-    router.put("/install/uninstallNodejs", uninstallNodejs);
-    router.put("/install/uninstallPm2", uninstallPm2);
+    router.put("/depend/uninstallNode", uninstallNode);
+    router.put("/depend/uninstallPm2", uninstallPm2);
+    router.put("/depend/uninstallEtm", uninstallEtm);
 };

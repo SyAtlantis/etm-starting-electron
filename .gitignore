@@ -4,3 +4,4 @@ dist/
 resources/
 .vscode/
 package-lock.json
+build/

@@ -1,77 +1,16 @@
-"use strict";
-
 const path = require("path");
 const fs = require("fs");
+const File = require("./file");
 
-const shelljs = require("shelljs");
-
-const { conf, Keys, Values } = require("./conf");
-const { colorWarning } = require("./colorful");
-let { rootDir, projDir, doctorShell } = require("./env");
-
-const _DEBUG = () => {
-    const path = require("path");
-    projDir = path.resolve(rootDir, "./");
-};
-void (_DEBUG);
-// _DEBUG();
+const rootDir = File.getRootPath();
+const projDir = path.resolve(path.join(rootDir, "build/etm"));
 
 const app = `${projDir}/app.js`;
 const appName = "entanmo";
 const deploy_command = `pm2 start ${app} -n ${appName} -- --base ${projDir}`;
 
-///////////////////////////////////////////////////////////////////////////////
-// for windows
 const WINREG_REG_KEY = "ENTANMO";
 const WINREG_REG_VALUE = path.resolve(path.join(rootDir, "startup.cmd"));
-///////////////////////////////////////////////////////////////////////////////
-
-const isDeployed = async () => {
-    try {
-        const deploy = await doctorShell(`pm2 id ${appName}`);
-        const ids = JSON.parse(deploy);
-        if (Array.isArray(ids) && ids.length <= 0) {
-            return false;
-        }
-
-        return true;
-    } catch (error) {
-        throw new Error(error.toString());
-    }
-};
-
-const deploy = async () => {
-    return new Promise((resolve, reject) => {
-        shelljs.exec(deploy_command, { silent: true }, (code, stdout, stderr) => {
-            void (stdout);
-            if (code === 0) {
-                return resolve(true);
-            }
-
-            return reject(new Error(stderr.toString()));
-        });
-    });
-};
-
-const undeploy = async () => {
-    return new Promise((resolve, reject) => {
-        shelljs.exec(`pm2 stop ${appName}`, { silent: true }, (code, stdout, stderr) => {
-            void (stdout);
-            if (code !== 0) {
-                return reject(new Error(stderr.toString()));
-            }
-
-            shelljs.exec(`pm2 delete ${appName}`, { silent: true }, (code, stdout, stderr) => {
-                void (stdout);
-                if (code === 0) {
-                    return resolve(true);
-                }
-
-                return reject(new Error(stderr.toString()));
-            });
-        });
-    });
-};
 
 const _winreg = () => {
     const Registry = require("winreg");
@@ -82,7 +21,6 @@ const _winreg = () => {
     });
     return { inst: winregInst, Registry };
 };
-
 
 const _winreg_issetted = async () => {
     return new Promise((resolve, reject) => {
@@ -155,7 +93,7 @@ const _startup_win32 = async () => {
         }
 
         await _winreg_set();
-        conf.set(Keys.startuped, Values.startuped);
+        // conf.set(Keys.startuped, Values.startuped);
         return true;
     } catch (error) {
         throw new Error(error.toString());
@@ -167,13 +105,13 @@ const _startup_linux = async () => {
         shelljs.exec("pm2 save", { silent: true }, (code, stdout, stderr) => {
             void (stdout);
             if (code !== 0) {
-                conf.set(Keys.startuped, Values.unstartuped);
+                // conf.set(Keys.startuped, Values.unstartuped);
                 return reject(new Error(stderr.toString()));
             }
 
             shelljs.exec("pm2 startup", { silent: true }, (code, stdout, stderr) => {
                 if (code === 0) {
-                    conf.set(Keys.startuped, Values.startuped);
+                    // conf.set(Keys.startuped, Values.startuped);
                     return resolve(true);
                 } else if (code === 1) {
                     const stdoutArray = stdout.split(/[\r|\n|\r\n]/);
@@ -181,11 +119,11 @@ const _startup_linux = async () => {
                     extraCmd = extraCmd === "" ? stdoutArray.pop() : extraCmd;
                     console.log("[Startup] To setup the Startup Script, copy/paste the following command once:\n"
                         + colorWarning(extraCmd));
-                    conf.set(Keys.startuped, Values.startupPending);
-                    conf.set(Keys.startup_pending, extraCmd);
+                    // conf.set(Keys.startuped, Values.startupPending);
+                    // conf.set(Keys.startup_pending, extraCmd);
                     return resolve(true);
                 } else {
-                    conf.set(Keys.startuped, Values.unstartuped);
+                    // conf.set(Keys.startuped, Values.unstartuped);
                     return reject(new Error(stderr.toString()));
                 }
             });
@@ -193,24 +131,12 @@ const _startup_linux = async () => {
     });
 };
 
-const startup = async () => {
-    if (process.platform === "win32") {
-        return await _startup_win32();
-    } else if (process.platform === "linux") {
-        return await _startup_linux();
-    } else if (process.platform === "darwin") {
-        return await _startup_linux();
-    } else {
-        throw new Error(`Unsupported os[${process.platform}]`);
-    }
-};
-
 const _unstartup_win32 = async () => {
     try {
         if (await _winreg_issetted()) {
             await _winreg_unset();
         }
-        conf.set(Keys.startuped, Values.unstartuped);
+        // conf.set(Keys.startuped, Values.unstartuped);
         return true;
     } catch (error) {
         throw new Error(error.toString());
@@ -221,7 +147,7 @@ const _unstartup_linux = async () => {
     return new Promise((resolve, reject) => {
         shelljs.exec("pm2 unstartup", { silent: true }, (code, stdout, stderr) => {
             if (code === 0) {
-                conf.set(Keys.startuped, Values.startuped);
+                // conf.set(Keys.startuped, Values.startuped);
                 return resolve(true);
             } else if (code === 1) {
                 const stdoutArray = stdout.split(/[\r|\n|\r\n]/);
@@ -229,56 +155,48 @@ const _unstartup_linux = async () => {
                 extraCmd = extraCmd === "" ? stdoutArray.pop() : extraCmd;
                 console.log("[Unstartup] To setup the Startup Script, copy/paste the following command once:\n"
                     + colorWarning(extraCmd));
-                conf.set(Keys.startuped, Values.unstartupPending);
-                conf.set(Keys.startup_pending, extraCmd);
+                // conf.set(Keys.startuped, Values.unstartupPending);
+                // conf.set(Keys.startup_pending, extraCmd);
                 return resolve(true);
             } else {
-                conf.set(Keys.startuped, Values.unstartuped);
+                // conf.set(Keys.startuped, Values.unstartuped);
                 return reject(new Error(stderr.toString()));
             }
         });
     });
 };
 
-const unstartup = async () => {
-    if (process.platform === "win32") {
-        return await _unstartup_win32();
-    } else if (process.platform === "linux") {
-        return await _unstartup_linux();
-    } else if (process.platform === "darwin") {
-        return await _unstartup_linux();
-    } else {
-        throw new Error(`Unsupported os[${process.platform}]`);
+
+class Boot {
+
+    static async boot() {
+        if (process.platform === "win32") {
+            return await _startup_win32();
+        } else if (process.platform === "linux") {
+            return await _startup_linux();
+        } else if (process.platform === "darwin") {
+            return await _startup_linux();
+        } else {
+            throw new Error(`Unsupported os[${process.platform}]`);
+        }
     }
-};
 
-const isStartuped = async () => {
-    const startuped = conf.get(Keys.startuped, Values.unstartuped);
-    return (startuped !== Values.unstartuped && startuped !== Values.unstartupPending);
-};
+    static async unboot() {
+        if (process.platform === "win32") {
+            return await _unstartup_win32();
+        } else if (process.platform === "linux") {
+            return await _unstartup_linux();
+        } else if (process.platform === "darwin") {
+            return await _unstartup_linux();
+        } else {
+            throw new Error(`Unsupported os[${process.platform}]`);
+        }
+    }
 
-const isStartupPending = async () => {
-    const startuped = conf.get(Keys.startuped, Values.unstartup);
-    return startuped === Values.startupPending;
-};
+    static async isboot() {
+        return await _winreg_issetted();
+    }
 
-const isUnstartupPending = async () => {
-    const startuped = conf.get(Keys.startuped, Values.unstartuped);
-    return startuped === Values.unstartupPending;
-};
+}
 
-const getPending = async () => {
-    return conf.get(Keys.startup_pending, "");
-};
-
-module.exports = {
-    deploy,
-    undeploy,
-    isDeployed,
-    startup,
-    unstartup,
-    isStartuped,
-    isStartupPending,
-    isUnstartupPending,
-    getPending
-};
+module.exports = Boot;

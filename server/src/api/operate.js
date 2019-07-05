@@ -1,9 +1,10 @@
 "use strict";
-const pm2 = require('../lib/pm2');
+const etm = require('../libs/etm');
+const boot = require('../libs/boot');
 
-let isStarted = async ctx => {
+let getStatus = async ctx => {
     try {
-        await pm2.isDeployed()
+        await etm.getStatus()
             .then(res => {
                 ctx.body = {
                     success: true,
@@ -22,7 +23,7 @@ let isStarted = async ctx => {
 
 let start = async ctx => {
     try {
-        await pm2.deploy()
+        await etm.start()
             .then(res => {
                 ctx.body = {
                     success: true,
@@ -41,7 +42,7 @@ let start = async ctx => {
 
 let stop = async ctx => {
     try {
-        await pm2.undeploy()
+        await etm.stop()
             .then(res => {
                 ctx.body = {
                     success: true,
@@ -59,15 +60,8 @@ let stop = async ctx => {
 }
 
 let pause = async ctx => {
-    ctx.body = {
-        success: false,
-        message: "no api to use!"
-    };
-}
-
-let boot = async ctx => {
     try {
-        await pm2.startup()
+        await etm.pause()
             .then(res => {
                 ctx.body = {
                     success: true,
@@ -84,9 +78,47 @@ let boot = async ctx => {
     }
 }
 
-let unboot = async ctx => {
+let setBoot = async ctx => {
     try {
-        await pm2.unstartup()
+        await boot.boot()
+            .then(res => {
+                ctx.body = {
+                    success: true,
+                    results: res
+                };
+            }).catch(err => {
+                throw err;
+            });
+    } catch (err) {
+        ctx.body = {
+            success: false,
+            message: `${err}`
+        };
+    }
+}
+
+let setUnboot = async ctx => {
+    try {
+        await boot.unboot()
+            .then(res => {
+                ctx.body = {
+                    success: true,
+                    results: res
+                };
+            }).catch(err => {
+                throw err;
+            });
+    } catch (err) {
+        ctx.body = {
+            success: false,
+            message: `${err}`
+        };
+    }
+}
+
+let isboot = async ctx => {
+    try {
+        await boot.isboot()
             .then(res => {
                 ctx.body = {
                     success: true,
@@ -104,10 +136,12 @@ let unboot = async ctx => {
 }
 
 module.exports = (router) => {
-    router.get("/control/isStarted", isStarted);
-    router.put("/control/start", start);
-    router.put("/control/stop", stop);
-    router.put("/control/pause", pause);
-    router.put("/control/boot", boot);
-    router.put("/control/unboot", unboot);
+    router.get("/operate/getStatus", getStatus);
+    router.put("/operate/start", start);
+    router.put("/operate/stop", stop);
+    router.put("/operate/pause", pause);
+
+    router.put("/operate/boot", setBoot);
+    router.put("/operate/unboot", setUnboot);
+    router.get("/operate/isboot", isboot);
 };

@@ -1,26 +1,25 @@
 const path = require("path");
 const fs = require("fs");
 
+const rootPath = path.resolve(path.join(__dirname, "../../.."));
+const configPath = path.join(rootPath, "/build/etm/config/config.json");
+const packagePath = path.join(rootPath, "/build/etm/package.json");
+
 class File {
 
     static getRootPath() {
-        return path.resolve(path.join(__dirname, "../../.."));
+        return rootPath;
     }
 
     static getConfigPath() {
-        let rootPath = File.getRootPath();
-        let configPath = path.join(rootPath, "/resources/etm/config/config.json");
         return configPath;
     }
 
     static getPackagePath() {
-        let rootPath = File.getRootPath();
-        let packagePath = path.join(rootPath, "/resources/etm/package.json");
         return packagePath;
     }
 
     static readConfig() {
-        let configPath = File.getConfigPath();
         let config = fs.readFileSync(configPath);
         let configJson = JSON.parse(config);
 
@@ -28,7 +27,6 @@ class File {
     }
 
     static writeConfig(configJson) {
-        let configPath = EtmHelper.getConfigPath();
         fs.writeFileSync(configPath, JSON.stringify(configJson, null, 2));
     }
 

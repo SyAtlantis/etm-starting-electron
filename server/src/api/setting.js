@@ -1,19 +1,19 @@
 "use strict";
 
-const EtmHelper = require('../lib/etmHelper');
+const File = require('../libs/file');
 
 let setVulue = async ctx => {
     try {
         let { params } = ctx.request.body;
 
-        let configJson = EtmHelper.readConfig();
+        let configJson = File.readConfig();
 
         configJson.port = params.port;
         configJson.peerPort = (parseInt(params.port) + 1).toString();
         configJson.publicIp = params.publicIp;
         configJson.forging.secret = [params.secret];
 
-        EtmHelper.writeConfig(configJson);
+        File.writeConfig(configJson);
 
         ctx.body = {
             success: true,

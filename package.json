@@ -41,6 +41,27 @@
     "electronDownload": {
       "version": "5.0.2"
     },
-    "icon": "./logo.ico"
+    "icon": "./logo.ico",
+    "files": [
+      "**/*",
+      "build/node/**/*",
+      "build/pm2/package.json",
+      {
+        "from": "build/pm2/dependances",
+        "to": "build/pm2/node_modules",
+        "filter": [
+          "**/*"
+        ]
+      },
+      "build/etm/**/*",
+      "!build/etm/dependances/**/*",
+      {
+        "from": "build/etm/dependances",
+        "to": "build/etm/node_modules",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ]
   }
 }
