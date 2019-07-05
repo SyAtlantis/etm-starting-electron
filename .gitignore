@@ -5,3 +5,5 @@ resources/
 .vscode/
 package-lock.json
 build/
+startup.cmd
+server/logs
