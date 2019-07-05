@@ -28,7 +28,9 @@
   "scripts": {
     "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build-w": "npx electron-builder -w"
+    "build-w": "npx electron-builder -w",
+    "build-m": "npx electron-builder -m",
+    "build-l": "npx electron-builder -l"
   },
   "author": "Sy",
   "license": "ISC",

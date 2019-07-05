@@ -37,7 +37,10 @@ let getNetInfo = async ctx => {
 
 let getGpuInfo = async ctx => {
     try {
-
+        ctx.body = {
+            success: false,
+            message: `${err}`
+        };
     } catch (err) {
         ctx.body = {
             success: false,

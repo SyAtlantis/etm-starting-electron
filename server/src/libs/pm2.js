@@ -36,26 +36,22 @@ class Pm2 {
 
             // windows通过自定义全新cmd文件的方式来进行安装
             if (process.platform === "win32") {
-                return new Promise((resolve, reject) => {
-
+                if (!fs.existsSync(srcPath)) {
+                    const pm2_command_path = path.join(pm2Dir, "node_modules", "pm2", "bin", "pm2");
+                    const commands = [
+                        "@ECHO OFF",
+                        "@SETLOCAL",
+                        "@SET PATHEXT=%PATHEXT:;.JS;=;%",
+                        `node "${path.resolve(pm2_command_path)}" %*`
+                    ];
+                    fs.writeFileSync(srcPath, commands.join("\r\n"));
                     if (!fs.existsSync(srcPath)) {
-                        const pm2_command_path = path.join(pm2Dir, "node_modules", "pm2", "bin", "pm2");
-                        const commands = [
-                            "@ECHO OFF",
-                            "@SETLOCAL",
-                            "@SET PATHEXT=%PATHEXT:;.JS;=;%",
-                            `node "${path.resolve(pm2_command_path)}" %*`
-                        ];
-                        fs.writeFileSync(srcPath, commands.join("\r\n"));
-                        if (!fs.existsSync(srcPath)) {
-                            return reject(new Error("Create pm2 command failure."));
-                        }
+                        throw (new Error("Create pm2 command failure."));
                     }
-                });
+                }
             }
-            else {
-                return await Shell.ln("-sf", srcPath, dstPath);
-            }
+
+            return await Shell.ln("-sf", srcPath, dstPath);
         } catch (err) {
             throw err;
         }
